@@ -1,0 +1,670 @@
+kind: AdaptiveDialog
+modelDescription: This topic asks the questions a series of yes/no questions and outputs a deterministic answer on VAT on property based on these answers
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent: {}
+  actions:
+    - kind: SendActivity
+      id: sendActivity_Aqj3UR
+      activity: Great!
+
+    - kind: SendActivity
+      id: sendActivity_UDuF6e
+      activity: " I'm going to ask you some yes ✅ or no ❌ questions."
+
+    - kind: SendActivity
+      id: sendActivity_FuyAqH
+      activity: Don't answer in the chat, please click  the buttons on the cards instead...
+
+    - kind: AdaptiveCardPrompt
+      id: dKFuyr
+      card: |-
+        {
+          "type": "AdaptiveCard",
+          "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+          "version": "1.5",
+          "body": [
+            {
+              "type": "TextBlock",
+              "text": "Ready to get started with the first question?",
+              "weight": "Bolder",
+              "wrap": true
+            }
+          ],
+          "actions": [
+            {
+              "type": "Action.Submit",
+              "title": "🙌 Yes, let's start",
+              "style": "positive",
+              "data": {
+                "readyToStart": "Yes",
+                "action": "readyToStartAnswer"
+              }
+            }
+          ]
+        }
+      output:
+        binding:
+          action: Topic.action
+          actionSubmitId: Topic.actionSubmitId
+          readyToStart: Topic.readyToStart
+
+      outputType:
+        properties:
+          action: String
+          actionSubmitId: String
+          readyToStart: String
+
+    - kind: ConditionGroup
+      id: conditionGroup_9uSnXd
+      conditions:
+        - id: conditionItem_w9tE7c
+          condition: =Topic.readyToStart = "Yes"
+          displayName: Ready to Start
+
+###################################################
+# Q1: Developer agreement
+###################################################
+    - kind: SendActivity
+      id: sendActivity_f0WIT9
+      displayName: First Question
+      activity: "**First question:**"
+
+    - kind: AdaptiveCardPrompt
+      id: VcPqiD
+      displayName: 1. Developer Agreement?
+      card: |-
+        {
+          "type": "AdaptiveCard",
+          "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+          "version": "1.5",
+          "body": [
+            {
+              "type": "TextBlock",
+              "text": "🤔 Is the land being sold in connection with a development agreement?",
+              "weight": "Bolder",
+              "wrap": true
+            },
+            {
+              "type": "TextBlock",
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
+              "text": "(Please consider whether in connection with the sale of the land, a development agreement is being entered into with the purchaser or with a person connected with the purchaser.)",
+              "wrap": true
+            },
+            {
+              "type": "ActionSet",
+              "actions": [
+                {
+                  "type": "Action.Submit",
+                  "title": "Yes",
+                  "data": {
+                    "landDevelopmentAgreement": "Yes",
+                    "action": "landDevelopmentAgreementAnswer"
+                  },
+                  "style": "positive"
+                },
+                {
+                  "type": "Action.Submit",
+                  "title": "No",
+                  "data": {
+                    "landDevelopmentAgreement": "No",
+                    "action": "landDevelopmentAgreementAnswer"
+                  },
+                  "style": "destructive"
+                }
+              ]
+            }
+          ]
+        }
+      output:
+        binding:
+          action: Topic.action
+          actionSubmitId: Topic.actionSubmitId
+          landDevelopmentAgreement: Topic.landDevelopmentAgreement
+
+      outputType:
+        properties:
+          action: String
+          actionSubmitId: String
+          landDevelopmentAgreement: String
+
+    - kind: ConditionGroup
+      id: conditionGroup_oEY0HQ
+      conditions:
+        - id: conditionItem_kCTKh9
+          condition: =Topic.landDevelopmentAgreement = "Yes"
+          displayName: Development Agreement
+          actions:
+            - kind: SendActivity
+              id: sendActivity_0GPCTk
+              activity: Ok, this is straightforward enough, no more questions needed.
+
+            - kind: SendActivity
+              id: sendActivity_tWUXEc
+              displayName: Answer
+              activity: |-
+                Irish VAT legislation contains anti-avoidance provisions that apply where undeveloped land is sold (which ordinarily would be exempt from VAT) in connection with a development agreement. In accordance with Section 94(3) VATCA 2010, where undeveloped land is sold and, in connection with that sale, an agreement is entered into with the purchaser (or with a person connected to the purchaser) to develop the land, the sale of the land becomes subject to VAT at the reduced rate (currently 13.5%). 
+
+                On the basis that the Land is being sold in connection with a development agreement, in the above circumstances, the sale of the land should be subject to VAT. The Vendor should therefore account for VAT at the reduced rate on the sale. A valid VAT invoice should be issued by the Vendor on completion (or, at the latest, by the 15th day of the month following the month in which the sale completes). The VAT arising should be included in the Vendor's VAT return (Box T1) for the VAT period in which the sale completes (or the period in which the invoice is issued, if later). 
+
+                As the sale of the Land is subject to VAT, the Vendor will be entitled to VAT recovery in respect of sales related costs (e.g. legal fees, professional fees, etc.). 
+
+                The Vendor will be required to complete Pre-Contract VAT Enquiries ("PCVE's") and provide these to the Purchaser. The Vendor will also be required to include a VAT charging clause in the Contract for Sale. [WE HAVE ATTACHED THE VAT SPECIAL CONDITION THAT CAN BE INCLUDED IN THE DRAFT CONTRACT FOR SALE AND PARTIALLY COMPLETED PCVES].
+
+            - kind: BeginDialog
+              id: gANOwt
+              dialog: copilots_header_e3f4f.topic.Questionhasbeenanswered
+
+      elseActions:
+        - kind: SendActivity
+          id: sendActivity_zSKLWO
+          activity: 👍Got it. The land was not sold with a development agreement.
+
+###################################################
+# Q2: Land partially developed?
+###################################################
+
+        - kind: SendActivity
+          id: sendActivity_xWb0qk
+          activity: "**Next question:**"
+
+        - kind: AdaptiveCardPrompt
+          id: Sj7P5g
+          displayName: 2. Partially Developed?
+          card: |-
+            {
+              "type": "AdaptiveCard",
+              "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+              "version": "1.5",
+              "body": [
+                {
+                  "type": "TextBlock",
+                  "text": "🤔 Is the land partially developed?",
+                  "weight": "Bolder",
+                  "wrap": true
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "(Please consider whether development has been carried out to the land but the development is not completed for VAT purposes)",
+                  "wrap": true,
+                  "spacing": "Small"
+                },
+                {
+                  "type": "ActionSet",
+                  "actions": [
+                    {
+                      "type": "Action.Submit",
+                      "title": "Yes, the land is partially developed",
+                      "style": "positive",
+                      "data": {
+                        "landDeveloped": "Yes",
+                        "action": "landDevelopedAnswer"
+                      }
+                    },
+                    {
+                      "type": "Action.Submit",
+                      "title": "No, it's not partially developed",
+                      "style": "destructive",
+                      "data": {
+                        "landDeveloped": "No",
+                        "action": "landDevelopedAnswer"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          output:
+            binding:
+              action: Topic.action
+              actionSubmitId: Topic.actionSubmitId
+              landDeveloped: Topic.landDeveloped
+
+          outputType:
+            properties:
+              action: String
+              actionSubmitId: String
+              landDeveloped: String
+
+        - kind: ConditionGroup
+          id: conditionGroup_YU0DgI
+          conditions:
+            - id: conditionItem_eUif33
+              condition: =Topic.landDeveloped = "Yes"
+              displayName: Partially Developed
+              actions:
+                - kind: SendActivity
+                  id: sendActivity_D1E2aN
+                  activity: |-
+                    Ok. so the land was:
+                    - not sold with a development agreement and
+                    - the land is partially developed
+
+                    I have an answer for you...
+
+                - kind: SendActivity
+                  id: sendActivity_04jE1X
+                  activity: |-
+                    The sale of partially developed land is subject to VAT at the reduced rate (currently 13.5%). Partially developed land is land that has been developed for VAT purposes in the last 20 years (please refer to Appendix 1 for the definition of development) but the development is not completed (i.e. the development has not reached the stage where the land can be used for the purposes for which the development was designed). 
+
+                    On the basis that the land is partially developed, the sale will be subject to VAT and the Vendor should account for VAT at the reduced rate on the sale. A valid VAT invoice should be issued by the Vendor on completion (or, at the latest, by the 15th day of the month following the month in which the sale completes). The VAT arising should be included in the Vendor's VAT return (Box T1) for the VAT period in which the sale completes (or the period in which the invoice is issued, if later). 
+
+                    As the sale of the Land is subject to VAT, the Vendor will be entitled to VAT recovery in respect of sales related costs (e.g. legal fees, professional fees, etc.). 
+
+                    The Vendor will be required to complete Pre-Contract VAT Enquiries ("PCVE's") and provide these to the Purchaser. The Vendor will also be required to include a VAT charging clause in the Contract for Sale. [WE HAVE ATTACHED THE VAT SPECIAL CONDITION THAT CAN BE INCLUDED IN THE DRAFT CONTRACT FOR SALE AND PARTIALLY COMPLETED PCVES].
+
+                - kind: BeginDialog
+                  id: M1RWfm
+                  dialog: copilots_header_e3f4f.topic.Questionhasbeenanswered
+
+###################################################
+# Q3: Developed to Completion in the last 5 years?
+###################################################
+
+          elseActions:
+            - kind: AdaptiveCardPrompt
+              id: uEXCQL
+              displayName: 3. Last 5 Years Completion?
+              card: |-
+                {
+                  "type": "AdaptiveCard",
+                  "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+                  "version": "1.5",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "🤔 Has the land been developed to completion in the last 5 years?",
+                      "weight": "Bolder",
+                      "wrap": true
+                    },
+                    {
+                      "type": "ActionSet",
+                      "actions": [
+                        {
+                          "type": "Action.Submit",
+                          "title": "Yes, developed to completion in the last 5 years",
+                          "style": "positive",
+                          "data": {
+                            "landDevelopedToCompletionLast5Years": "Yes",
+                            "action": "landDevelopedToCompletionLast5YearsAnswer"
+                          }
+                        },
+                        {
+                          "type": "Action.Submit",
+                          "title": "No, it has not been developed to completion",
+                          "style": "destructive",
+                          "data": {
+                            "landDevelopedToCompletionLast5Years": "No",
+                            "action": "landDevelopedToCompletionLast5YearsAnswer"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              output:
+                binding:
+                  action: Topic.action
+                  actionSubmitId: Topic.actionSubmitId
+                  landDevelopedToCompletionLast5Years: Topic.landDevelopedToCompletionLast5Years
+
+              outputType:
+                properties:
+                  action: String
+                  actionSubmitId: String
+                  landDevelopedToCompletionLast5Years: String
+
+            - kind: ConditionGroup
+              id: conditionGroup_2yF3wn
+              conditions:
+                - id: conditionItem_GVEzzx
+                  condition: =Topic.landDevelopedToCompletionLast5Years = "Yes"
+                  displayName: Yes - dev. to completion 5 yrs
+                  actions:
+                    - kind: SendActivity
+                      id: sendActivity_6eQfFa
+                      displayName: Answer
+                      activity: |-
+                        Land which has been developed to completion (please refer to Appendix 1 for the definition of 'development' and 'completed' for VAT purposes) in the 5 years prior to sale is subject to VAT at the reduced rate (currently 13.5%). 
+
+                        On the basis that the Land was developed to completion in [YEAR], the sale of the land will be subject to VAT at the reduced rate (currently 13.5%) and the Vendor should account for VAT on sale. A valid VAT invoice should be issued by the Vendor on completion (or, at the latest, by the 15th day of the month following the month in which the sale completes). The VAT arising should be included in the Vendor's VAT return (Box T1) for the VAT period in which the sale completes (or the period in which the invoice is issued, if later). 
+
+                        As the sale of the Land is subject to VAT, the Vendor will be entitled to VAT recovery in respect of sales related costs (e.g. legal fees, professional fees, etc.). 
+
+                        The Vendor will be required to complete Pre-Contract VAT Enquiries ("PCVE's") and provide these to the Purchaser. The Vendor will also be required to include a VAT charging clause in the Contract for Sale. [WE HAVE ATTACHED THE VAT SPECIAL CONDITION THAT CAN BE INCLUDED IN THE DRAFT CONTRACT FOR SALE AND PARTIALLY COMPLETED PCVES].
+
+                    - kind: BeginDialog
+                      id: JsYejE
+                      displayName: Answered
+                      dialog: copilots_header_e3f4f.topic.Questionhasbeenanswered
+
+###################################################
+# Q4: Confirm developer agreement
+###################################################
+              elseActions:
+                - kind: AdaptiveCardPrompt
+                  id: BZ5ld7
+                  displayName: 4. Confirm Development Agreement
+                  card: |-
+                    {
+                      "type": "AdaptiveCard",
+                      "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+                      "version": "1.5",
+                      "body": [
+                        {
+                          "type": "TextBlock",
+                          "text": "🤔 You are selling undeveloped land that is not being sold in connection with a development agreement, please confirm?",
+                          "weight": "Bolder",
+                          "wrap": true
+                        },
+                        {
+                          "type": "ActionSet",
+                          "actions": [
+                            {
+                              "type": "Action.Submit",
+                              "title": "Yes, I confirm there is no development agreement",
+                              "style": "positive",
+                              "data": {
+                                "undevelopedLandNoDevAgreementConfirmed": "Yes",
+                                "action": "undevelopedLandNoDevAgreementAnswer"
+                              }
+                            },
+                            {
+                              "type": "Action.Submit",
+                              "title": "No, there is a development agreement",
+                              "style": "destructive",
+                              "data": {
+                                "undevelopedLandNoDevAgreementConfirmed": "No",
+                                "action": "undevelopedLandNoDevAgreementAnswer"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  output:
+                    binding:
+                      action: Topic.action
+                      actionSubmitId: Topic.actionSubmitId
+                      undevelopedLandNoDevAgreementConfirmed: Topic.undevelopedLandNoDevAgreementConfirmed
+
+                  outputType:
+                    properties:
+                      action: String
+                      actionSubmitId: String
+                      undevelopedLandNoDevAgreementConfirmed: String
+
+###################################################
+# Q5: Joint Option to tax
+###################################################
+
+                - kind: ConditionGroup
+                  id: conditionGroup_pSp9rB
+                  conditions:
+                    - id: conditionItem_BMn0KR
+                      condition: =Topic.undevelopedLandNoDevAgreementConfirmed = "Yes"
+                      displayName: Development Agreement
+                      actions:
+                        - kind: AdaptiveCardPrompt
+                          id: f40OQS
+                          card: |-
+                            {
+                              "type": "AdaptiveCard",
+                              "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+                              "version": "1.5",
+                              "body": [
+                                {
+                                  "type": "TextBlock",
+                                  "text": "🤔 Does the purchaser intend to exercise the Joint Option to Tax?",
+                                  "weight": "Bolder",
+                                  "wrap": true
+                                },
+                                {
+                                  "type": "ActionSet",
+                                  "actions": [
+                                    {
+                                      "type": "Action.Submit",
+                                      "title": "Yes",
+                                      "style": "positive",
+                                      "data": {
+                                        "jointOptionToTax": "Yes",
+                                        "action": "jointOptionToTaxAnswer"
+                                      }
+                                    },
+                                    {
+                                      "type": "Action.Submit",
+                                      "title": "No",
+                                      "style": "destructive",
+                                      "data": {
+                                        "jointOptionToTax": "No",
+                                        "action": "jointOptionToTaxAnswer"
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          output:
+                            binding:
+                              action: Topic.action
+                              actionSubmitId: Topic.actionSubmitId
+                              jointOptionToTax: Topic.jointOptionToTax
+
+                          outputType:
+                            properties:
+                              action: String
+                              actionSubmitId: String
+                              jointOptionToTax: String
+
+###################################################
+# Q7: Purchaser will suffer VAT as result of JOTT
+###################################################
+
+                        - kind: ConditionGroup
+                          id: conditionGroup_1egXJx
+                          conditions:
+                            - id: conditionItem_sMKCLv
+                              condition: =Topic.jointOptionToTax = "Yes"
+                              displayName: Yes - Joint Option to Tax
+                              actions:
+                                - kind: AdaptiveCardPrompt
+                                  id: CGAvqO
+                                  displayName: 7. VAT Cost - JOTT
+                                  card: |-
+                                    {
+                                      "type": "AdaptiveCard",
+                                      "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+                                      "version": "1.5",
+                                      "body": [
+                                        {
+                                          "type": "TextBlock",
+                                          "text": "🤔 Will the purchaser suffer a VAT cost as a result of the JOTT being exercised?",
+                                          "weight": "Bolder",
+                                          "wrap": true
+                                        },
+                                        {
+                                          "type": "TextBlock",
+                                          "text": "Please consider whether the purchaser intends to use the land for fully taxable, exempt or mixed activities.",
+                                          "wrap": true,
+                                          "spacing": "Small"
+                                        },
+                                        {
+                                          "type": "ActionSet",
+                                          "actions": [
+                                            {
+                                              "type": "Action.Submit",
+                                              "title": "Yes, there is a VAT cost",
+                                              "style": "positive",
+                                              "data": {
+                                                "purchaserSuffersVATCostFromJOTT": "Yes",
+                                                "action": "purchaserSuffersVATCostFromJOTTAnswer"
+                                              }
+                                            },
+                                            {
+                                              "type": "Action.Submit",
+                                              "title": "No, there is no VAT cost",
+                                              "style": "destructive",
+                                              "data": {
+                                                "purchaserSuffersVATCostFromJOTT": "No",
+                                                "action": "purchaserSuffersVATCostFromJOTTAnswer"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  output:
+                                    binding:
+                                      action: Topic.action
+                                      actionSubmitId: Topic.actionSubmitId
+                                      purchaserSuffersVATCostFromJOTT: Topic.purchaserSuffersVATCostFromJOTT
+
+                                  outputType:
+                                    properties:
+                                      action: String
+                                      actionSubmitId: String
+                                      purchaserSuffersVATCostFromJOTT: String
+
+                                - kind: ConditionGroup
+                                  id: conditionGroup_ciKGoM
+                                  conditions:
+                                    - id: conditionItem_Gkb0wh
+                                      condition: =Topic.purchaserSuffersVATCostFromJOTT = "Yes"
+                                      displayName: Purchaser suffers VAT Cost
+                                      actions:
+                                        - kind: SendActivity
+                                          id: sendActivity_GzHJ7r
+                                          activity: |-
+                                            On the basis that the Land is undeveloped and is   not being sold in connection with a development agreement, the sale should be   exempt from VAT. In accordance with Section 94(5) VATCA 2010, where immovable   goods are sold which would, ordinarily, be exempt from VAT, the vendor can   seek to exercise the Joint Option to Tax ("JOTT") to render the   sale taxable. Where the JOTT is exercised, the purchaser is required to   self-account for VAT at the reduced rate (currently 13.5%) under the   reverse-charge mechanism. In order to exercise the JOTT, the vendor and   purchaser must be taxable persons (please refer to Appendix 1 for the   definion of 'taxable person' for VAT purposes) and must enter into a written   agreement by the 15th day of the month following the month in which the sale   takes place. In practice, the JOTT is exercised by including the relevant VAT   clause in the contract for sale. 
+                                             
+                                                Exercising the JOTT will prevent a clawback arising for the Vendor under   the Capital Goods Scheme ("CGS") in respect of VAT recovered (or   self-accounted) on acquisition of the land (if any). The CGS is a mechanism   that regulates the deduction of VAT incurred on immovable goods over the   adjustment period (i.e. the tax life) of those goods. The adjustment period   in respect of VAT incurred on acquisition or development of immovable goods   is 20 intervals (c. 20 years). When the JOTT is exercised, the vendor is   deemed to have put the immovable goods to a fully taxable use for the   remaining intervals of the adjustment period thus preventing a clawback   arising. Exercising the JOTT will also permit the Vendor to recover VAT   incurred on sales related costs (e.g legal fees, professional fees, etc.).   
+                                             
+                                                On the basis that the Purchaser intends to use the Land for [INSERT VAT   EXEMPT / PARTIALLY EXEMPT ACTIVITIES] (i.e. [INSERT EXPECTED PURCHASER USE]),   the Purchaser may not agree to exercising the JOTT as the VAT that it will be   required to self-account for under the reverse-charge mechanism will not be   fully deductible (i.e. an irrecoverable VAT cost will arise for the   Purchaser). If the Purchaser does not agree to the JOTT, the Vendor should   consider whether it wishes to proceed with a VAT exempt sale and whether,   comercially, it would be feasible to increase the sales price by the VAT cost   that will arise for the Vendor as a result of the VAT exempt sale -i.e. the   VAT clawback in respect of the acquisition of the Land (if any) and the   irrecoverable VAT on sales related costs.
+                                             
+                                                The Vendor will be required to complete Pre-Contract VAT Enquiries   ("PCVE's") and provide these to the Purchaser. The Purchaser should   complete page 3 of the PCVEs and return same to the Vendor. The Vendor will   be required to include a VAT clause in the Contract for Sale. [WE HAVE   ATTACHED THE VAT SPECIAL CONDITION THAT CAN BE INCLUDED IN THE DRAFT CONTRACT   FOR SALE AND PARTIALLY COMPLETED PCVES].
+
+                                        - kind: BeginDialog
+                                          id: Y5EohX
+                                          dialog: copilots_header_e3f4f.topic.Questionhasbeenanswered
+
+                                - kind: BeginDialog
+                                  id: VqFKNK
+                                  dialog: copilots_header_e3f4f.topic.thanksbye
+
+###################################################
+# Q8: Clawback when JOTT not exercised
+###################################################
+
+                          elseActions:
+                            - kind: AdaptiveCardPrompt
+                              id: 4CCza2
+                              displayName: 8. Did Vendor Recover VAT
+                              card: |-
+                                {
+                                  "type": "AdaptiveCard",
+                                  "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+                                  "version": "1.5",
+                                  "body": [
+                                    {
+                                      "type": "TextBlock",
+                                      "text": "If the Vendor does not exercise the JOTT, is there a risk of a clawback arising?",
+                                      "weight": "Bolder",
+                                      "wrap": true
+                                    },
+                                    {
+                                      "type": "TextBlock",
+                                      "text": "Please consider whether the Vendor recovered VAT on acquisition of the land (or self-accounted for VAT under the JOTT).",
+                                      "wrap": true,
+                                      "spacing": "Small"
+                                    },
+                                    {
+                                      "type": "TextBlock",
+                                      "text": "🤔 Did the Vendor recover VAT on the acquisition of the land (including via self‑accounting under JOTT)?",
+                                      "wrap": true,
+                                      "spacing": "Medium"
+                                    },
+                                    {
+                                      "type": "ActionSet",
+                                      "actions": [
+                                        {
+                                          "type": "Action.Submit",
+                                          "title": "Yes",
+                                          "style": "positive",
+                                          "data": {
+                                            "vendorRecoveredVATOnAcquisition": "Yes",
+                                            "action": "vendorRecoveredVATOnAcquisitionAnswer"
+                                          }
+                                        },
+                                        {
+                                          "type": "Action.Submit",
+                                          "title": "No",
+                                          "style": "destructive",
+                                          "data": {
+                                            "vendorRecoveredVATOnAcquisition": "No",
+                                            "action": "vendorRecoveredVATOnAcquisitionAnswer"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              output:
+                                binding:
+                                  action: Topic.action
+                                  actionSubmitId: Topic.actionSubmitId
+                                  vendorRecoveredVATOnAcquisition: Topic.vendorRecoveredVATOnAcquisition
+
+                              outputType:
+                                properties:
+                                  action: String
+                                  actionSubmitId: String
+                                  vendorRecoveredVATOnAcquisition: String
+
+                            - kind: ConditionGroup
+                              id: conditionGroup_3nsl2H
+                              conditions:
+                                - id: conditionItem_vbuCPz
+                                  condition: =Topic.vendorRecoveredVATOnAcquisition = "Yes"
+                                  displayName: Vendor recovered VAT
+                                  actions:
+                                    - kind: SendActivity
+                                      id: sendActivity_wUARxo
+                                      activity: |-
+                                        On the basis that the Land is undeveloped and is not being sold in connection with a development agreement, the sale of the   Land should be exempt from VAT.
+
+                                        As VAT was recovered by the Vendor on acquisition of the Land, a clawback   of VAT will arise for the Vendor under the Capital Goods Scheme   ("CGS") as a result of the VAT exempt sale. The CGS is a mechanism that regulates the   deduction of VAT incurred on immovable goods over the adjustment period (i.e.   the tax life) of those goods. The adjustment period in respect of VAT   incurred on acquisition or development of immovable goods is 20 intervals (c.   20 years). The clawback arising is computed using a formula prescribed in VAT   legislation and is based on the VAT recovered on acquisition as a proportion   of the number of intervals remaining in the adjustment period when the VAT   exempt sale is made. Based on the information provided, we have computed the   clawback arising in respect of the VAT recovered on acquisition of the Land   to be [INSERT].
+
+                                        The VAT clawback can be avoided where the Vendor agrees with the purchaser   to exercise the Joint Option to Tax ("JOTT"). However, in this   instance, we understand that the JOTT will not be exercised as [INSERT REASON   FOR JOTT NOT BEING EXERCISED]. The Vendor should consider whether,   comercially, it would be feasible to adjust the sales price of the Land to   take account of the VAT clawback that will arise as a result of the VAT   exempt sale.
+
+                                        On the basis that the sale of the Land will be exempt from VAT, the Vendor   will not be entitled to recover VAT on sales related costs (e.g. legal fees,   professional fees, etc.).
+
+                                        The Vendor will be required to complete Pre-Contract VAT Enquiries   ("PCVE's") and provide these to the Purchaser. No VAT clause is   required in the Contract for Sale on the basis that the sale is exempt from   VAT but, for completeness, a sentence may be included to the effect that   "the transfer is not subject to VAT").
+
+                                    - kind: BeginDialog
+                                      id: 2l3eZj
+                                      dialog: copilots_header_e3f4f.topic.Questionhasbeenanswered
+
+                              elseActions:
+                                - kind: SendActivity
+                                  id: sendActivity_w6tonH
+                                  activity: |-
+                                    On the basis that the Land is undeveloped and is   not being sold in connection with a development agreement, the sale should be   exempt from VAT. As VAT was not incurred/recovered by the Vendor on   acquisition of the Land, no clawback should arise for the Vendor under the   Capital Goods Scheme ("CGS") as a result of the VAT exempt sale.   
+                                     
+                                        On the basis that the sale of the Land will be exempt from VAT, the Vendor   will not be entitled to recover VAT on sales related costs (e.g. legal fees,   professional fees, etc.).
+                                     
+                                        The Vendor will be required to complete Pre-Contract VAT Enquiries   ("PCVE's") and provide these to the Purchaser. No VAT clause is   required in the Contract for Sale on the basis that the sale is exempt from   VAT but, for completeness, a sentence may be included to the effect that   "the transfer is not subject to VAT").
+
+                                - kind: BeginDialog
+                                  id: QHDnvr
+                                  dialog: copilots_header_e3f4f.topic.Questionhasbeenanswered
+
+inputType: {}
+outputType: {}
